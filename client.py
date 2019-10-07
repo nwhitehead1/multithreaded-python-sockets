@@ -22,7 +22,7 @@ def main():
         # Response File
         responseData = s.recv(BUFFER_SIZE)
         if not responseData:
-            print('[CLIENT] Response not received, file could not be found.')
+            print('[CLIENT] Response not received: Socket shutdown by server -> The file could not be found.')
         else:
             print('[CLIENT] Response received. Writing data to local file...')
             try:
