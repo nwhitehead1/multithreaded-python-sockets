@@ -31,6 +31,7 @@ class ClientThread(Thread):
         except:
             print('[SERVER] File not found:', textRequest)
             self.sock.shutdown(socket.SHUT_WR)
+            # self.sock.close()
         
 def main():
     print('[SERVER] Creating socket...')
@@ -40,8 +41,8 @@ def main():
         s.bind(serverAddress)
         threads = []
         print('[SERVER] Listening for incoming connections...')
-        s.listen(2)
         while True:
+            s.listen(2)
             conn, addr = s.accept()
             print('[SERVER] Connection accepted from:', addr)
             while True:
