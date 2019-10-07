@@ -2,7 +2,9 @@
 
 import socket
 from threading import Thread
-import sys
+
+HOST = ''
+PORT = 12000
 
 BUFFER_SIZE = 1024
 
@@ -13,28 +15,31 @@ class ClientThread(Thread):
         self.ip = ip
         self.port = port
         self.sock = sock
-        print("[SERVER] New thread started:", ip, ":"+str(port))
+        print('[SERVER] New thread started:', ip, '(', str(port), ')')
         self.requestFileName = requestFileName
 
     def run(self):
-        print('[SERVER] Attempting to open file:', self.requestFileName.decode('utf-8'))
-        f = open(self.requestFileName.decode('utf-8'), 'rb')
-        print('[SERVER] Successfully opened file:', self.requestFileName.decode('utf-8'))
-        l = f.read(BUFFER_SIZE)
-        self.sock.send(l)
-            
+        textRequest = self.requestFileName.decode('utf-8')
+        print('[SERVER] Attempting to open file:', textRequest)
+        try:
+            f = open(self.requestFileName.decode('utf-8'), 'rb')
+            print('[SERVER] Successfully opened file:', textRequest)
+            l = f.read(BUFFER_SIZE)
+            self.sock.sendall(l)
+            if f:
+                f.close() 
+        except:
+            print('[SERVER] File not found:', textRequest)
+            self.sock.shutdown(socket.SHUT_WR)
         
 def main():
-    HOST = sys.argv[1]
-    PORT = int(sys.argv[2])
-
     print('[SERVER] Creating socket...')
-    with socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0) as s:
+    with socket.socket(socket.AF_INET6, socket.SOCK_STREAM) as s:
         serverAddress = (HOST, PORT, 0, 0)
+        print('[SERVER] Binding host and port...')
         s.bind(serverAddress)
         threads = []
-        print('[SERVER] Binding host and port successful.')
-        print("[SERVER] Listening for incoming connections...")
+        print('[SERVER] Listening for incoming connections...')
         s.listen()
         while True:
             conn, addr = s.accept()

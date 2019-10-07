@@ -6,34 +6,35 @@ import sys
 BUFFER_SIZE = 1024
 
 def main():
-    HOST = sys.argv[1]
-    PORT = int(sys.argv[2])
-    FILE = sys.argv[3]
-
-    print('[CLIENT] Creating socket...')
-    with socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0) as s:
-        print('[CLIENT] Connecting to server:', HOST, ' (', PORT, ')')
-        s.connect((HOST, PORT, 0, 0))
-
-        # Request String
-        try:
-            byteRequestString = FILE.encode('utf-8')
-            s.send(byteRequestString)
-        except socket.error:
-            print('[CLIENT] Request failed!')
+    HOST = sys.argv[1]      # Server IP address
+    PORT = int(sys.argv[2]) # Port used by the server
+    FILE = sys.argv[3]      # File Name (full server path)
     
+    print('[CLIENT] Creating socket...')
+    s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+    s.connect((HOST, PORT, 0, 0))
+    print('[CLIENT] Connecting to server:', HOST, ' (', PORT, ')')
+    try:
+        # Request String
+        byteRequestString = FILE.encode('utf-8')
+        s.sendall(byteRequestString)
+
         # Response File
-        try:
-            fileData = s.recv(BUFFER_SIZE)
+        responseData = s.recv(BUFFER_SIZE)
+        if not responseData:
+            print('[CLIENT] Response not received, file could not be found.')
+        else:
+            print('[CLIENT] Response received. Writing data to local file...')
             try:
                 f = open('response_file.txt', 'wb')
-                print('[CLIENT] Response received.')
-                f.write(fileData)
-            finally:
-                f.close()
-        finally:
-            print('[CLIENT] Closing client socket...')
-            s.close()
+                f.write(responseData)
+            except:
+                print('[CLIENT] Unable to write response to file!')
+                if f:
+                    f.close()
+    finally:
+        print('[CLIENT] Closing client socket...')
+        s.close()
 
 if __name__ == '__main__':
     main()
