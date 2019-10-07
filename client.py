@@ -2,6 +2,7 @@
 
 import socket
 import sys
+from crypto import encrypt, decrypt
 
 BUFFER_SIZE = 1024
 
@@ -17,17 +18,20 @@ def main():
     try:
         # Request String
         byteRequestString = FILE.encode('utf-8')
-        s.sendall(byteRequestString)
+        encryptedByteRequestString = encrypt(byteRequestString)
+        print('[]')
+        s.sendall(encryptedByteRequestString)
 
         # Response File
         responseData = s.recv(BUFFER_SIZE)
-        if not responseData:
+        responseDataDecrypted = decrypt(responseData)
+        if not responseDataDecrypted:
             print('[CLIENT] Response not received: Socket shutdown by server -> The file could not be found.')
         else:
             print('[CLIENT] Response received. Writing data to local file...')
             try:
                 f = open('response_file.txt', 'wb')
-                f.write(responseData)
+                f.write(responseDataDecrypted)
             except:
                 print('[CLIENT] Unable to write response to file!')
                 if f:
