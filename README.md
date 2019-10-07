@@ -2,8 +2,10 @@
 Project 1 solution for CSC9010
 
 How to run:
+1. Generate the public/private keys
+```$ python3 generate-key.py```
 
-1. Start server in background:
+2. Start server in background:
 
   ```$ python3 server.py &```
  
@@ -15,4 +17,4 @@ How to run:
   
   PORT = Server Port
   
-  FILE = String representation of file name (eg. "test.txt")
+  FILE = String representation of file name (eg. "sample.txt")

@@ -2,6 +2,7 @@
 
 import socket
 from threading import Thread
+from crypto import encrypt, decrypt
 
 HOST = ''
 PORT = 12000
@@ -19,17 +20,18 @@ class ClientThread(Thread):
         self.requestFileName = requestFileName
 
     def run(self):
-        textRequest = self.requestFileName.decode('utf-8')
-        print('[SERVER] Attempting to open file:', textRequest)
+        textRequest = self.requestFileName
+        decryptedTextRequest = decrypt(textRequest).decode('utf-8')
+        print('[SERVER] Attempting to open file:', decryptedTextRequest)
         try:
-            f = open(self.requestFileName.decode('utf-8'), 'rb')
-            print('[SERVER] Successfully opened file:', textRequest)
+            f = open(decryptedTextRequest, 'rb')
+            print('[SERVER] Successfully opened file:', decryptedTextRequest)
             l = f.read(BUFFER_SIZE)
-            self.sock.sendall(l)
+            self.sock.sendall(encrypt(l))
             if f:
                 f.close() 
         except:
-            print('[SERVER] File not found:', textRequest)
+            print('[SERVER] File not found:', decryptedTextRequest)
             self.sock.shutdown(socket.SHUT_WR)
             # self.sock.close()
         
