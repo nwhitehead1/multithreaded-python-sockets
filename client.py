@@ -23,12 +23,12 @@ def main():
 
             # Response File
             responseData = s.recv(BUFFER_SIZE)
-            responseDataDecrypted = decrypt(responseData)
-            if not responseDataDecrypted:
+            if not responseData:
                 print('[CLIENT] Response not received: The file could not be found.')
             else:
                 print('[CLIENT] Response received. Writing data to local file...')
                 try:
+                    responseDataDecrypted = decrypt(responseData)
                     f = open('responses/response_file.txt', 'wb')
                     f.write(responseDataDecrypted)
                 except:
