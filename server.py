@@ -4,7 +4,7 @@ import socket
 from threading import Thread
 from crypto import encrypt, decrypt
 
-HOST = ''
+HOST = 'localhost'
 PORT = 12000
 
 BUFFER_SIZE = 1024
@@ -33,7 +33,6 @@ class ClientThread(Thread):
         except:
             print('[SERVER] File not found:', decryptedTextRequest)
             self.sock.shutdown(socket.SHUT_WR)
-            # self.sock.close()
         
 def main():
     print('[SERVER] Creating socket...')

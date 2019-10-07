@@ -2,7 +2,7 @@
 Project 1 solution for CSC9010
 
 How to run:
-1. Generate the public/private keys
+1. Generate the public/private keys (run once)
 ```$ python3 generate-key.py```
 
 2. Start server in background:

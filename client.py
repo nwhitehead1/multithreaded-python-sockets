@@ -14,22 +14,23 @@ def main():
     s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
     s.connect((HOST, PORT, 0, 0))
     print('[CLIENT] Connecting to server:', HOST, ' (', PORT, ')')
-<<<<<<< HEAD
     while True:
         try:
             # Request String
             byteRequestString = input('[CLIENT] File Name Request: ').encode('utf-8')
-            s.sendall(byteRequestString)
+            encryptedByteRequestString = encrypt(byteRequestString)
+            s.sendall(encryptedByteRequestString)
 
             # Response File
             responseData = s.recv(BUFFER_SIZE)
-            if not responseData:
+            responseDataDecrypted = decrypt(responseData)
+            if not responseDataDecrypted:
                 print('[CLIENT] Response not received: The file could not be found.')
             else:
                 print('[CLIENT] Response received. Writing data to local file...')
                 try:
                     f = open('response_file.txt', 'wb')
-                    f.write(responseData)
+                    f.write(responseDataDecrypted)
                 except:
                     print('[CLIENT] Unable to write response to file!')
                     if f:
@@ -38,32 +39,6 @@ def main():
             print('[CLIENT] Closing client socket...')
             break
     s.close()
-=======
-    try:
-        # Request String
-        byteRequestString = FILE.encode('utf-8')
-        encryptedByteRequestString = encrypt(byteRequestString)
-        print('[]')
-        s.sendall(encryptedByteRequestString)
-
-        # Response File
-        responseData = s.recv(BUFFER_SIZE)
-        responseDataDecrypted = decrypt(responseData)
-        if not responseDataDecrypted:
-            print('[CLIENT] Response not received: Socket shutdown by server -> The file could not be found.')
-        else:
-            print('[CLIENT] Response received. Writing data to local file...')
-            try:
-                f = open('response_file.txt', 'wb')
-                f.write(responseDataDecrypted)
-            except:
-                print('[CLIENT] Unable to write response to file!')
-                if f:
-                    f.close()
-    finally:
-        print('[CLIENT] Closing client socket...')
-        s.close()
->>>>>>> crypto
 
 if __name__ == '__main__':
     main()
