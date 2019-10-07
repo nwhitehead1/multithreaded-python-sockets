@@ -29,7 +29,7 @@ def main():
             else:
                 print('[CLIENT] Response received. Writing data to local file...')
                 try:
-                    f = open('response_file.txt', 'wb')
+                    f = open('responses/response_file.txt', 'wb')
                     f.write(responseDataDecrypted)
                 except:
                     print('[CLIENT] Unable to write response to file!')
@@ -42,3 +42,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+

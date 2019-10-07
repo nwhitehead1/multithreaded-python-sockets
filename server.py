@@ -24,7 +24,7 @@ class ClientThread(Thread):
         decryptedTextRequest = decrypt(textRequest).decode('utf-8')
         print('[SERVER] Attempting to open file:', decryptedTextRequest)
         try:
-            f = open(decryptedTextRequest, 'rb')
+            f = open('files/' + decryptedTextRequest, 'rb')
             print('[SERVER] Successfully opened file:', decryptedTextRequest)
             l = f.read(BUFFER_SIZE)
             self.sock.sendall(encrypt(l))
@@ -59,3 +59,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
