@@ -40,7 +40,7 @@ def main():
         s.bind(serverAddress)
         threads = []
         print('[SERVER] Listening for incoming connections...')
-        s.listen()
+        s.listen(2)
         while True:
             conn, addr = s.accept()
             print('[SERVER] Connection accepted from:', addr)
