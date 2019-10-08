@@ -27,7 +27,9 @@ class ClientThread(Thread):
             f = open('files/' + decryptedTextRequest, 'rb')
             print('[SERVER] Successfully opened file:', decryptedTextRequest)
             l = f.read(BUFFER_SIZE)
-            self.sock.sendall(encrypt(l))
+            encryptedResponse = encrypt(l)
+            print('[SERVER] Sending encrypted response:', encryptedResponse)
+            self.sock.sendall(encryptedResponse)
             if f:
                 f.close() 
         except:
@@ -48,6 +50,7 @@ def main():
             print('[SERVER] Connection accepted from:', addr)
             while True:
                 data = conn.recv(BUFFER_SIZE)
+                print('[SERVER] Receiving encrypted client request:', data)
                 if not data:
                     break
                 thread = ClientThread(addr[0], addr[1], conn, data)

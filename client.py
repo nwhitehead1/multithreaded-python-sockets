@@ -19,10 +19,12 @@ def main():
             # Request String
             byteRequestString = input('[CLIENT] File Name Request: ').encode('utf-8')
             encryptedByteRequestString = encrypt(byteRequestString)
+            print('[CLIENT] Sending encrypted request:', encryptedByteRequestString)
             s.sendall(encryptedByteRequestString)
 
             # Response File
             responseData = s.recv(BUFFER_SIZE)
+            print('[CLIENT] Receiving encrypted server response:', responseData)
             if not responseData:
                 print('[CLIENT] Response not received: The file could not be found.')
             else:
