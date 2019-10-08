@@ -4,7 +4,7 @@ import socket
 from threading import Thread
 from crypto import encrypt, decrypt
 
-HOST = 'localhost'
+HOST = ''
 PORT = 12000
 
 BUFFER_SIZE = 1024
