@@ -1,6 +1,5 @@
 from Crypto.PublicKey import RSA
 from Crypto import Random
-import base64
 
 # Return tuple of (private, public)
 def keyGen():
