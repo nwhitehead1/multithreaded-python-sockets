@@ -2,39 +2,53 @@
 
 import socket
 import sys
-from crypto import encrypt, decrypt
+import crypto
 
 BUFFER_SIZE = 1024
 
 def main():
+    # ping6 -I lowpan0 fe80::ec0b:fb0f:76b9:f393 <- Other rasp pi device
     HOST = sys.argv[1]      # Server IP address
     PORT = int(sys.argv[2]) # Port used by the server
     
     print('[CLIENT] Creating socket...')
-    s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+    s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0)
     s.connect((HOST, PORT, 0, 0))
     print('[CLIENT] Connecting to server:', HOST, ' (', PORT, ')')
+    clientPrivateKey, clientPublicKey = crypto.keyGen()
+    # Receive public key from server
+    try:
+        serverPublicKeyString = s.recv(BUFFER_SIZE).decode('utf-8')
+        serverPublicKey = crypto.stringToKey(serverPublicKeyString)
+    except ValueError as ve:
+        print('[CLIENT] Invalid public key from server:', ve)
+        s.close()
+    # Send public key to server
+    print('[CLIENT] Sending Public Key:\n', crypto.keyToBytes(clientPublicKey))
+    s.sendall(crypto.keyToBytes(clientPublicKey))
     while True:
         try:
             # Request String
-            byteRequestString = input('[CLIENT] File Name Request: ').encode('utf-8')
-            encryptedByteRequestString = encrypt(byteRequestString)
+            byteRequestString = input('[CLIENT] File Name Request: ').encode()
+            encryptedByteRequestString = crypto.encrypt(byteRequestString, serverPublicKey)
             print('[CLIENT] Sending encrypted request:', encryptedByteRequestString)
             s.sendall(encryptedByteRequestString)
 
             # Response File
-            responseData = s.recv(BUFFER_SIZE)
-            print('[CLIENT] Receiving encrypted server response:', responseData)
-            if not responseData:
+            encryptedResponseFile = s.recv(BUFFER_SIZE)
+            if encryptedResponseFile:
+                print('[CLIENT] Receiving encrypted server response:', encryptedResponseFile)
+            if not encryptedResponseFile:
                 print('[CLIENT] Response not received: The file could not be found.')
             else:
                 print('[CLIENT] Response received. Writing data to local file...')
                 try:
-                    responseDataDecrypted = decrypt(responseData)
+                    decryptedResponseFile = crypto.decrypt(encryptedResponseFile, clientPrivateKey)
                     f = open('responses/response_file.txt', 'wb')
-                    f.write(responseDataDecrypted)
+                    f.write(decryptedResponseFile)
                 except:
                     print('[CLIENT] Unable to write response to file!')
+                finally:
                     if f:
                         f.close()
         except KeyboardInterrupt:
@@ -44,5 +58,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-

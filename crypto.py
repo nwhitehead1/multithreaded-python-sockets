@@ -1,40 +1,23 @@
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import padding
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
+from Crypto.PublicKey import RSA
+from Crypto import Random
+import base64
 
-def encrypt(file_name) :
-    with open("keys/public_key.pem", "rb") as key_file:
-        public_key = serialization.load_pem_public_key(
-            key_file.read(),
-            backend=default_backend()
-        )
-    key_file.close()
+# Return tuple of (private, public)
+def keyGen():
+    modulusLen = 1024
+    rand = Random.new().read
+    privateKey = RSA.generate(modulusLen, rand)
+    publicKey = privateKey.publickey()
+    return privateKey, publicKey
 
-    return public_key.encrypt(
-        file_name,
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None)
-    )
+def encrypt(raw: bytes, publicKey: RSA._RSAobj):
+    return publicKey.encrypt(raw, 32)[0]
 
-def decrypt(encrypted):
-    with open("keys/private_key.pem", "rb") as key_file:
-        private_key = serialization.load_pem_private_key(
-            key_file.read(),
-            password=None,
-            backend=default_backend()
-        )
- 
-    return private_key.decrypt(
-        encrypted,
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
-        )
-    )
+def decrypt(encoded: bytes, privateKey: RSA._RSAobj):
+    return privateKey.decrypt(encoded)
 
+def stringToKey(keyString):
+    return RSA.importKey(keyString)
 
-
+def keyToBytes(keyObj: RSA._RSAobj):
+    return keyObj.exportKey()
