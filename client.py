@@ -14,7 +14,7 @@ def main():
     # ping6 -I lowpan0 fe80::ec0b:fb0f:76b9:f393 <- Other rasp pi device
     HOST = sys.argv[1]      # Server IP address
     PORT = int(sys.argv[2]) # Port used by the server
-    
+
     print('[CLIENT] Creating socket...')
     s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0)
     s.connect((HOST, PORT, 0, 0))
@@ -48,11 +48,10 @@ def main():
                 decryptedResponseFile = crypto.decrypt(encryptedResponseFile, clientPrivateKey)
                 f = open('responses/response_file.txt', 'wb')
                 f.write(decryptedResponseFile)
-            except:
-                print('[CLIENT] Unable to write response to file!')
-            finally:
                 if f:
                     f.close()
+            except:
+                print('[CLIENT] Unable to write response to file!')
     except KeyboardInterrupt:
         print('[CLIENT] Closing client socket...')
     except FileNotFoundException:

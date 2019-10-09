@@ -5,7 +5,7 @@ import crypto
 from threading import Thread
 
 HOST = ''
-PORT = 12003
+PORT = 12000
 
 BUFFER_SIZE = 1024
 
@@ -40,7 +40,6 @@ def main():
     serverPrivateKey, serverPublicKey = crypto.keyGen()
     print('[SERVER] Creating socket...')
     with socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0) as s:
-        # serverHost = socket.gethostname()
         serverAddress = (HOST, PORT, 0, 0)
         print('[SERVER] Binding host and port...')
         s.bind(serverAddress)
