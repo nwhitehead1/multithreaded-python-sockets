@@ -6,6 +6,10 @@ import crypto
 
 BUFFER_SIZE = 1024
 
+# File Not Found -> Throw this to end execution on empty server send.
+class FileNotFoundException(Exception):
+    pass
+
 def main():
     # ping6 -I lowpan0 fe80::ec0b:fb0f:76b9:f393 <- Other rasp pi device
     HOST = sys.argv[1]      # Server IP address
@@ -26,35 +30,35 @@ def main():
     # Send public key to server
     print('[CLIENT] Sending Public Key:\n', crypto.keyToBytes(clientPublicKey))
     s.sendall(crypto.keyToBytes(clientPublicKey))
-    while True:
-        try:
-            # Request String
-            byteRequestString = input('[CLIENT] File Name Request: ').encode()
-            encryptedByteRequestString = crypto.encrypt(byteRequestString, serverPublicKey)
-            print('[CLIENT] Sending encrypted request:', encryptedByteRequestString)
-            s.sendall(encryptedByteRequestString)
+    try:
+        # Request String
+        byteRequestString = input('[CLIENT] File Name Request: ').encode()
+        encryptedByteRequestString = crypto.encrypt(byteRequestString, serverPublicKey)
+        print('[CLIENT] Sending encrypted request:', encryptedByteRequestString)
+        s.sendall(encryptedByteRequestString)
 
-            # Response File
-            encryptedResponseFile = s.recv(BUFFER_SIZE)
-            if encryptedResponseFile:
-                print('[CLIENT] Receiving encrypted server response:', encryptedResponseFile)
-            if not encryptedResponseFile:
-                print('[CLIENT] Response not received: The file could not be found.')
-            else:
-                print('[CLIENT] Response received. Writing data to local file...')
-                try:
-                    decryptedResponseFile = crypto.decrypt(encryptedResponseFile, clientPrivateKey)
-                    f = open('responses/response_file.txt', 'wb')
-                    f.write(decryptedResponseFile)
-                except:
-                    print('[CLIENT] Unable to write response to file!')
-                finally:
-                    if f:
-                        f.close()
-        except KeyboardInterrupt:
-            print('[CLIENT] Closing client socket...')
-            break
-    s.close()
+        # Response File
+        encryptedResponseFile = s.recv(BUFFER_SIZE)
+        if not encryptedResponseFile:
+           raise FileNotFoundException()
+        else:
+            print('[CLIENT] Receiving encrypted server response:', encryptedResponseFile)
+            print('[CLIENT] Response received. Writing data to local file...')
+            try:
+                decryptedResponseFile = crypto.decrypt(encryptedResponseFile, clientPrivateKey)
+                f = open('responses/response_file.txt', 'wb')
+                f.write(decryptedResponseFile)
+            except:
+                print('[CLIENT] Unable to write response to file!')
+            finally:
+                if f:
+                    f.close()
+    except KeyboardInterrupt:
+        print('[CLIENT] Closing client socket...')
+    except FileNotFoundException:
+        print('[CLIENT] Response not received: The file could not be found.')
+    finally:
+        s.close()
 
 if __name__ == '__main__':
     main()
