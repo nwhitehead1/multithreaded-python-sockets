@@ -2,19 +2,15 @@
 Project 1 solution for CSC9010
 
 How to run:
-1. Generate the public/private keys (run once)
-```$ python3 generate-key.py```
 
-2. Start server in background:
+1. Start server in background:
 
   ```$ python3 server.py &```
  
 2. Start client with command-line args:
 
-  ```$ python3 client.py [HOST] [PORT] [FILE]```
+  ```$ python3 client.py [HOST] [PORT]```
   
   HOST = Server IP
   
   PORT = Server Port
-  
-  FILE = String representation of file name (eg. "sample.txt")
