@@ -1,16 +1,16 @@
-# project1
-Project 1 solution for CSC9010
+# Multithreaded Python Socket Program
 
-How to run:
+## Server
 
-1. Start server in background:
+To start the Python server in the background run:
 
   ```$ python3 server.py &```
- 
-2. Start client with command-line args:
+
+## Client
+
+To start the Python client run:
 
   ```$ python3 client.py [HOST] [PORT]```
   
   HOST = Server IP
-  
   PORT = Server Port
